@@ -19,8 +19,10 @@ function App() {
   const [position, setPosition] = useState({ x: 280, y: 180 });
   const [colorIndex, setColorIndex] = useState(0);
   const [keys, setKeys] = useState<Set<string>>(new Set());
+  const [targetPosition, setTargetPosition] = useState<{ x: number, y: number } | null>(null);
 
   const moveSpeed = 5;
+  const clickMoveSpeed = 8;
 
   // Handle keydown events
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
@@ -41,6 +43,19 @@ function App() {
     });
   }, []);
 
+  // Handle mouse click in game area
+  const handleGameAreaClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+    
+    // Adjust for character size to center it on click point
+    const targetX = Math.max(0, Math.min(GAME_AREA_WIDTH - CHARACTER_SIZE, clickX - CHARACTER_SIZE / 2));
+    const targetY = Math.max(0, Math.min(GAME_AREA_HEIGHT - CHARACTER_SIZE, clickY - CHARACTER_SIZE / 2));
+    
+    setTargetPosition({ x: targetX, y: targetY });
+  }, []);
+
   // Movement logic
   useEffect(() => {
     const moveCharacter = () => {
@@ -48,17 +63,38 @@ function App() {
         let newX = prev.x;
         let newY = prev.y;
 
-        if (keys.has('ArrowLeft')) {
-          newX = Math.max(0, prev.x - moveSpeed);
-        }
-        if (keys.has('ArrowRight')) {
-          newX = Math.min(GAME_AREA_WIDTH - CHARACTER_SIZE, prev.x + moveSpeed);
-        }
-        if (keys.has('ArrowUp')) {
-          newY = Math.max(0, prev.y - moveSpeed);
-        }
-        if (keys.has('ArrowDown')) {
-          newY = Math.min(GAME_AREA_HEIGHT - CHARACTER_SIZE, prev.y + moveSpeed);
+        // Handle mouse click movement
+        if (targetPosition) {
+          const dx = targetPosition.x - prev.x;
+          const dy = targetPosition.y - prev.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < clickMoveSpeed) {
+            // Close enough, snap to target
+            newX = targetPosition.x;
+            newY = targetPosition.y;
+            setTargetPosition(null);
+          } else {
+            // Move towards target
+            const moveX = (dx / distance) * clickMoveSpeed;
+            const moveY = (dy / distance) * clickMoveSpeed;
+            newX = prev.x + moveX;
+            newY = prev.y + moveY;
+          }
+        } else {
+          // Handle keyboard movement
+          if (keys.has('ArrowLeft')) {
+            newX = Math.max(0, prev.x - moveSpeed);
+          }
+          if (keys.has('ArrowRight')) {
+            newX = Math.min(GAME_AREA_WIDTH - CHARACTER_SIZE, prev.x + moveSpeed);
+          }
+          if (keys.has('ArrowUp')) {
+            newY = Math.max(0, prev.y - moveSpeed);
+          }
+          if (keys.has('ArrowDown')) {
+            newY = Math.min(GAME_AREA_HEIGHT - CHARACTER_SIZE, prev.y + moveSpeed);
+          }
         }
 
         return { x: newX, y: newY };
@@ -67,7 +103,7 @@ function App() {
 
     const intervalId = setInterval(moveCharacter, 16); // ~60fps
     return () => clearInterval(intervalId);
-  }, [keys]);
+  }, [keys, targetPosition]);
 
   // Set up keyboard event listeners
   useEffect(() => {
@@ -92,6 +128,7 @@ function App() {
         <div className="text-lg text-gray-300 space-y-2">
           <p>Use <span className="bg-white bg-opacity-20 px-2 py-1 rounded font-mono">Arrow Keys</span> to move</p>
           <p>Press <span className="bg-white bg-opacity-20 px-2 py-1 rounded font-mono">Space</span> to change color</p>
+          <p>Click anywhere in the game area to move there</p>
         </div>
       </div>
 
@@ -102,10 +139,11 @@ function App() {
           height: GAME_AREA_HEIGHT 
         }}
         tabIndex={0}
+        onClick={handleGameAreaClick}
       >
         {/* Character */}
         <div
-          className="absolute rounded-full transition-all duration-75 shadow-lg border-2 border-white border-opacity-50"
+          className="absolute rounded-full transition-all duration-75 shadow-lg border-2 border-white border-opacity-50 cursor-pointer"
           style={{
             left: position.x,
             top: position.y,
@@ -115,6 +153,19 @@ function App() {
             boxShadow: `0 4px 15px ${COLORS[colorIndex]}40`,
           }}
         />
+
+        {/* Target indicator */}
+        {targetPosition && (
+          <div
+            className="absolute rounded-full border-2 border-dashed border-gray-500 opacity-50 pointer-events-none"
+            style={{
+              left: targetPosition.x,
+              top: targetPosition.y,
+              width: CHARACTER_SIZE,
+              height: CHARACTER_SIZE,
+            }}
+          />
+        )}
 
         {/* Position indicator */}
         <div className="absolute top-4 left-4 text-gray-600 text-sm font-mono bg-white bg-opacity-80 px-3 py-1 rounded-lg">
@@ -132,7 +183,7 @@ function App() {
       </div>
 
       <div className="mt-6 text-center text-gray-300">
-        <p className="text-sm">Click anywhere and use your keyboard to play!</p>
+        <p className="text-sm">Use keyboard controls or click to move the character!</p>
       </div>
     </div>
   );
