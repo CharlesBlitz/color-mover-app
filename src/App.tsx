@@ -14,16 +14,48 @@ const COLORS = [
 const GAME_AREA_WIDTH = 600;
 const GAME_AREA_HEIGHT = 400;
 const CHARACTER_SIZE = 40;
+const SCORE_ZONE_SIZE = 50;
 
 function App() {
   const [position, setPosition] = useState({ x: 280, y: 180 });
   const [colorIndex, setColorIndex] = useState(0);
   const [keys, setKeys] = useState<Set<string>>(new Set());
   const [targetPosition, setTargetPosition] = useState<{ x: number, y: number } | null>(null);
+  const [score, setScore] = useState(0);
+  const [scoreZone, setScoreZone] = useState({ x: 0, y: 0 });
 
   const moveSpeed = 5;
   const clickMoveSpeed = 8;
 
+  // Generate random position for score zone
+  const generateRandomScoreZone = useCallback(() => {
+    const maxX = GAME_AREA_WIDTH - SCORE_ZONE_SIZE;
+    const maxY = GAME_AREA_HEIGHT - SCORE_ZONE_SIZE;
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+    setScoreZone({ x: newX, y: newY });
+  }, []);
+
+  // Initialize score zone position
+  useEffect(() => {
+    generateRandomScoreZone();
+  }, [generateRandomScoreZone]);
+
+  // Check for collision with score zone
+  const checkScoreZoneCollision = useCallback((charPos: { x: number, y: number }) => {
+    const charCenterX = charPos.x + CHARACTER_SIZE / 2;
+    const charCenterY = charPos.y + CHARACTER_SIZE / 2;
+    const zoneCenterX = scoreZone.x + SCORE_ZONE_SIZE / 2;
+    const zoneCenterY = scoreZone.y + SCORE_ZONE_SIZE / 2;
+    
+    const distance = Math.sqrt(
+      Math.pow(charCenterX - zoneCenterX, 2) + 
+      Math.pow(charCenterY - zoneCenterY, 2)
+    );
+    
+    // Collision if distance is less than combined radii
+    return distance < (CHARACTER_SIZE / 2 + SCORE_ZONE_SIZE / 2);
+  }, [scoreZone]);
   // Handle keydown events
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     event.preventDefault();
@@ -97,13 +129,21 @@ function App() {
           }
         }
 
-        return { x: newX, y: newY };
+        const newPosition = { x: newX, y: newY };
+        
+        // Check for score zone collision
+        if (checkScoreZoneCollision(newPosition)) {
+          setScore(prevScore => prevScore + 1);
+          generateRandomScoreZone();
+        }
+        
+        return newPosition;
       });
     };
 
     const intervalId = setInterval(moveCharacter, 16); // ~60fps
     return () => clearInterval(intervalId);
-  }, [keys, targetPosition]);
+  }, [keys, targetPosition, checkScoreZoneCollision, generateRandomScoreZone]);
 
   // Set up keyboard event listeners
   useEffect(() => {
@@ -129,6 +169,7 @@ function App() {
           <p>Use <span className="bg-white bg-opacity-20 px-2 py-1 rounded font-mono">Arrow Keys</span> to move</p>
           <p>Press <span className="bg-white bg-opacity-20 px-2 py-1 rounded font-mono">Space</span> to change color</p>
           <p>Click anywhere in the game area to move there</p>
+          <p>Collect the <span className="text-yellow-300 font-semibold">golden zones</span> to score points!</p>
         </div>
       </div>
 
@@ -167,9 +208,26 @@ function App() {
           />
         )}
 
+        {/* Score Zone */}
+        <div
+          className="absolute rounded-lg border-4 border-yellow-400 bg-gradient-to-br from-yellow-300 to-yellow-500 shadow-lg animate-pulse"
+          style={{
+            left: scoreZone.x,
+            top: scoreZone.y,
+            width: SCORE_ZONE_SIZE,
+            height: SCORE_ZONE_SIZE,
+            boxShadow: '0 4px 20px rgba(234, 179, 8, 0.6)',
+          }}
+        />
+
         {/* Position indicator */}
         <div className="absolute top-4 left-4 text-gray-600 text-sm font-mono bg-white bg-opacity-80 px-3 py-1 rounded-lg">
           Position: ({Math.round(position.x)}, {Math.round(position.y)})
+        </div>
+
+        {/* Score indicator */}
+        <div className="absolute top-16 left-4 text-gray-600 text-sm font-mono bg-white bg-opacity-80 px-3 py-1 rounded-lg">
+          Score: {score}
         </div>
 
         {/* Color indicator */}
@@ -183,7 +241,7 @@ function App() {
       </div>
 
       <div className="mt-6 text-center text-gray-300">
-        <p className="text-sm">Use keyboard controls or click to move the character!</p>
+        <p className="text-sm">Use keyboard controls or click to move the character and collect golden zones!</p>
       </div>
     </div>
   );
