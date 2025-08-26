@@ -163,6 +163,15 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex flex-col items-center justify-center p-8">
+      {/* Game Logo in top right */}
+      <div className="absolute top-8 right-8 z-10">
+        <img 
+          src="/game-logo.svg" 
+          alt="Game Logo" 
+          className="w-16 h-16 drop-shadow-lg hover:scale-110 transition-transform duration-200"
+        />
+      </div>
+
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-white mb-4">Color Character Game</h1>
         <div className="text-lg text-gray-300 space-y-2">
