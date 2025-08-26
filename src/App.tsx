@@ -166,8 +166,8 @@ function App() {
       {/* Game Logo in top right */}
       <div className="absolute top-8 right-8 z-10">
         <img 
-          src="/game-logo.svg" 
-          alt="Game Logo" 
+          src="/controller-icon.svg" 
+          alt="Controller Icon" 
           className="w-16 h-16 drop-shadow-lg hover:scale-110 transition-transform duration-200"
         />
       </div>
