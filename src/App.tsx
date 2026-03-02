@@ -177,7 +177,7 @@ function App() {
       </div>
 
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-white mb-4">Color Character Game</h1>
+        <h1 className="text-4xl font-bold text-white mb-4">test test</h1>
         <div className="text-lg text-gray-300 space-y-2">
           <p>Use <span className="bg-white bg-opacity-20 px-2 py-1 rounded font-mono">Arrow Keys</span> to move</p>
           <p>Press <span className="bg-white bg-opacity-20 px-2 py-1 rounded font-mono">Space</span> to change color</p>
