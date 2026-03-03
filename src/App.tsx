@@ -16,7 +16,7 @@ const COLORS = [
 ];
 
 const GAME_AREA_WIDTH = 600;
-const GAME_AREA_HEIGHT = 400;
+const GAME_AREA_HEIGHT = 600;
 const CHARACTER_SIZE = 40;
 const SCORE_ZONE_SIZE = 50;
 
