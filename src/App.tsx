@@ -166,7 +166,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-700 to-emerald-500 flex flex-col items-center justify-center p-8">
       {/* Game Logo in top right */}
       <div className="absolute top-8 right-8 z-10">
         <img 
