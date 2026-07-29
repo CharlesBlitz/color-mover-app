@@ -22,7 +22,7 @@ const ACCENT_CLASSES: Record<string, { bg: string; ring: string; text: string; g
 
 export default function ArcadeHub({ onSelect, scores }: Props) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-700 to-emerald-500 flex flex-col items-center justify-center p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 flex flex-col items-center justify-center p-4 sm:p-8">
       {/* Logo */}
       <div className="absolute top-6 right-6 z-10">
         <img

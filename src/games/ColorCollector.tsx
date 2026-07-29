@@ -152,7 +152,7 @@ export default function ColorCollector({ onBack, onSubmitScore, bestScore }: Pro
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-700 to-emerald-500 flex flex-col items-center justify-center p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 flex flex-col items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-3xl flex items-center justify-between mb-6">
         <button
           onClick={onBack}
@@ -250,7 +250,7 @@ export default function ColorCollector({ onBack, onSubmitScore, bestScore }: Pro
             <div className="flex gap-3 mt-2">
               <button
                 onClick={restart}
-                className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white px-5 py-2.5 rounded-lg font-semibold transition-colors"
+                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-400 text-white px-5 py-2.5 rounded-lg font-semibold transition-colors"
               >
                 <RotateCcw size={18} /> Play Again
               </button>
