@@ -24,7 +24,7 @@ export default function ArcadeHub({ onSelect, scores }: Props) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 flex flex-col items-center justify-center p-4 sm:p-8">
       {/* Logo */}
-      <div className="absolute top-6 right-6 z-10">
+      <div className="absolute top-6 left-6 z-10">
         <img
           src="/controller-icon.svg"
           alt="Controller Icon"
